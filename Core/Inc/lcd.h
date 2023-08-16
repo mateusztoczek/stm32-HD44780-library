@@ -2,6 +2,23 @@
 #define LCD_H_
 
 
+#define RS_Pin GPIO_PIN_1
+#define RS_GPIO_Port GPIOC
+#define RW_Pin GPIO_PIN_3
+#define RW_GPIO_Port GPIOC
+#define E_Pin GPIO_PIN_0
+#define E_GPIO_Port GPIOC
+#define D4_Pin GPIO_PIN_4
+#define D4_GPIO_Port GPIOB
+#define D5_Pin GPIO_PIN_5
+#define D5_GPIO_Port GPIOB
+#define D6_Pin GPIO_PIN_6
+#define D6_GPIO_Port GPIOB
+#define D7_Pin GPIO_PIN_7
+#define D7_GPIO_Port GPIOB
+
+
+
 #define LCD_Y 						2
 #define LCD_X 						16
 #define LCD_LINE1 					0x00
@@ -34,12 +51,12 @@
 
 
 
-#define LCD_E_SET HAL_GPIO_WritePin(LCD_E_GPIO_Port, LCD_E_Pin, GPIO_PIN_SET)
-#define LCD_E_RESET HAL_GPIO_WritePin(LCD_E_GPIO_Port, LCD_E_Pin, GPIO_PIN_RESET)
-#define LCD_RS_SET HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_SET)
-#define LCD_RS_RESET HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_RESET)
-#define LCD_RW_SET HAL_GPIO_WritePin(LCD_RW_GPIO_Port, LCD_RW_Pin, GPIO_PIN_SET)
-#define LCD_RW_RESET HAL_GPIO_WritePin(LCD_RW_GPIO_Port, LCD_RW_Pin, GPIO_PIN_RESET)
+#define LCD_E_SET 		HAL_GPIO_WritePin(E_GPIO_Port, E_Pin, GPIO_PIN_SET)
+#define LCD_E_RESET 	HAL_GPIO_WritePin(E_GPIO_Port, E_Pin, GPIO_PIN_RESET)
+#define LCD_RS_SET 		HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_SET)
+#define LCD_RS_RESET 	HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_RESET)
+#define LCD_RW_SET 		HAL_GPIO_WritePin(RW_GPIO_Port, RW_Pin, GPIO_PIN_SET)
+#define LCD_RW_RESET 	HAL_GPIO_WritePin(RW_GPIO_Port, RW_Pin, GPIO_PIN_RESET)
 
 
 

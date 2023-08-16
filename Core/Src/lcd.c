@@ -8,8 +8,8 @@
 
 // Configure data pins based on the provided data byte
 static inline void LCD_SetDataPins(uint8_t data) {
-    GPIO_TypeDef* ports[] = {LCD_DB4_GPIO_Port, LCD_DB5_GPIO_Port, LCD_DB6_GPIO_Port, LCD_DB7_GPIO_Port};
-    uint16_t pins[] = {LCD_DB4_Pin, LCD_DB5_Pin, LCD_DB6_Pin, LCD_DB7_Pin};
+    GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
 
     for (int i = 0; i < sizeof(ports) / sizeof(ports[0]); i++) {
         if (data & (1 << i)) {
@@ -25,8 +25,8 @@ static inline void LCD_SetDataPins(uint8_t data) {
 static inline uint8_t LCD_ReadDataPins() {
     uint8_t result = 0;
 
-    GPIO_TypeDef* ports[] = {LCD_DB4_GPIO_Port, LCD_DB5_GPIO_Port, LCD_DB6_GPIO_Port, LCD_DB7_GPIO_Port};
-    uint16_t pins[] = {LCD_DB4_Pin, LCD_DB5_Pin, LCD_DB6_Pin, LCD_DB7_Pin};
+    GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
 
     for (int i = 0; i < sizeof(ports) / sizeof(ports[0]); i++) {
         if (HAL_GPIO_ReadPin(ports[i], pins[i]) == GPIO_PIN_SET) {
@@ -41,21 +41,39 @@ static inline uint8_t LCD_ReadDataPins() {
 // Set display in input mode
 static void LCD_SetDataInputMode() {
 	 GPIO_InitTypeDef GPIO_InitStruct;
-	 GPIO_InitStruct.Pin = LCD_DB4_Pin|LCD_DB5_Pin|LCD_DB6_Pin|LCD_DB7_Pin;
+	 GPIO_InitStruct.Pin = D4_Pin;
 	 GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	 GPIO_InitStruct.Pull = GPIO_NOPULL;
-	 HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	 HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
+	 
+	 GPIO_InitStruct.Pin = D5_Pin;
+	 HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+	 
+	 GPIO_InitStruct.Pin = D6_Pin;
+	 HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
+	 	 
+	 GPIO_InitStruct.Pin = D7_Pin;
+	 HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
 }
 
 
 // Set display in output mode
 static void LCD_SetDataOutputMode() {
 	  GPIO_InitTypeDef GPIO_InitStruct;
-	  GPIO_InitStruct.Pin = LCD_DB4_Pin|LCD_DB5_Pin|LCD_DB6_Pin|LCD_DB7_Pin;
+	  GPIO_InitStruct.Pin = D4_Pin;
 	  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	  GPIO_InitStruct.Pull = GPIO_NOPULL;
 	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	  HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
+	  
+	  GPIO_InitStruct.Pin = D5_Pin;
+	  HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+	  
+	  GPIO_InitStruct.Pin = D6_Pin;
+	  HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
+	  	 
+	  GPIO_InitStruct.Pin = D7_Pin;
+	  HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
 }
 
 
