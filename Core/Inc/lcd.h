@@ -21,6 +21,7 @@
 
 #define LCD_Y 						2
 #define LCD_X 						16
+
 #define LCD_LINE1 					0x00
 #define LCD_LINE2 					0x40
 #define LCD_CLR						0x01
@@ -72,12 +73,9 @@ void LCD_Char(char c);
 void LCD_String(char* str);
 void LCD_Int(int value);
 void LCD_Hex(int value, uint8_t upper_case);
-
-void LCD_WriteCommand(uint8_t cmd);
-void LCD_WriteData(uint8_t data);
+void LCD_Write(uint8_t data,uint8_t is_command);
 uint8_t LCD_CheckBusyFlag();
-void LCD_WriteByte(uint8_t data);
-uint8_t LCD_ReadByte(void);
+uint8_t LCD_Read(void);
 
 
 #endif /* LCD_H_ */
