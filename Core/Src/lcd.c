@@ -1,9 +1,8 @@
-#include <lcd.h>
+#include "lcd.h"
 #include "main.h"
 #include "stm32f3xx_hal.h"
 #include "gpio.h"
 #include "tim.h"
-
 
 
 
@@ -15,8 +14,13 @@ TIM_HandleTypeDef *timer = &htim3;
 static inline void LCD_WritePins(uint8_t data) {
 	LCD_E_SET;
 
-    GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
-    uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+    #ifdef LCD_8BIT_MODE
+		GPIO_TypeDef* ports[] = {D0_GPIO_Port,D1_GPIO_Port,D2_GPIO_Port,D3_GPIO_Port,D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    	uint16_t pins[] = {D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+	#else
+		GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    	uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+	#endif
 
     for (int i = 0; i < sizeof(ports) / sizeof(ports[0]); i++) {
         if (data & (1 << i)) {
@@ -35,8 +39,14 @@ static inline uint8_t LCD_ReadPins() {
     uint8_t result = 0;
     LCD_E_SET;
 
-    GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
-    uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+	#ifdef LCD_8BIT_MODE
+		GPIO_TypeDef* ports[] = {D0_GPIO_Port,D1_GPIO_Port,D2_GPIO_Port,D3_GPIO_Port,D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    	uint16_t pins[] = {D0_Pin,D1_Pin,D2_Pin,D3_Pin,D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+	#else
+		GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
+    	uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+	#endif
+    
 
     for (int i = 0; i < sizeof(ports) / sizeof(ports[0]); i++) {
         if (HAL_GPIO_ReadPin(ports[i], pins[i]) == GPIO_PIN_SET) {
@@ -51,40 +61,69 @@ static inline uint8_t LCD_ReadPins() {
 
 // Set display in input mode
 static void LCD_SetDataInputMode() {
-	 GPIO_InitTypeDef GPIO_InitStruct;
-	 GPIO_InitStruct.Pin = D4_Pin;
-	 GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	 GPIO_InitStruct.Pull = GPIO_NOPULL;
-	 HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = D4_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
 
-	 GPIO_InitStruct.Pin = D5_Pin;
-	 HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D5_Pin;
+	HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
 
-	 GPIO_InitStruct.Pin = D6_Pin;
-	 HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D6_Pin;
+	HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
 
-	 GPIO_InitStruct.Pin = D7_Pin;
-	 HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D7_Pin;
+	HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
+
+	#ifdef LCD_8BIT_MODE
+	 	GPIO_InitStruct.Pin = D0_Pin;
+	 	HAL_GPIO_Init(D0_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D1_Pin;
+	 	HAL_GPIO_Init(D1_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D2_Pin;
+	 	HAL_GPIO_Init(D2_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D3_Pin;
+	 	HAL_GPIO_Init(D3_GPIO_Port, &GPIO_InitStruct);
+	#endif
+
 }
 
 
 // Set display in output mode
 static void LCD_SetDataOutputMode() {
-	  GPIO_InitTypeDef GPIO_InitStruct;
-	  GPIO_InitStruct.Pin = D4_Pin;
-	  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	  GPIO_InitStruct.Pull = GPIO_NOPULL;
-	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	  HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = D4_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(D4_GPIO_Port, &GPIO_InitStruct);
 
-	  GPIO_InitStruct.Pin = D5_Pin;
-	  HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D5_Pin;
+	HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
 
-	  GPIO_InitStruct.Pin = D6_Pin;
-	  HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D6_Pin;
+	HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
 
-	  GPIO_InitStruct.Pin = D7_Pin;
-	  HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D7_Pin;
+	HAL_GPIO_Init(D7_GPIO_Port, &GPIO_InitStruct);
+
+	#ifdef LCD_8BIT_MODE
+	 	GPIO_InitStruct.Pin = D0_Pin;
+	 	HAL_GPIO_Init(D0_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D1_Pin;
+	 	HAL_GPIO_Init(D1_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D2_Pin;
+	 	HAL_GPIO_Init(D2_GPIO_Port, &GPIO_InitStruct);
+
+	 	GPIO_InitStruct.Pin = D3_Pin;
+	 	HAL_GPIO_Init(D3_GPIO_Port, &GPIO_InitStruct);
+	#endif
 }
 
 
@@ -94,8 +133,13 @@ uint8_t LCD_Read(void) {
 	LCD_SetDataInputMode();
 
 	LCD_RW_SET;
-	result = (LCD_ReadPins() << 4);
-	result |= LCD_ReadPins();
+	#ifndef LCD_8BIT_MODE
+		result = (LCD_ReadPins() << 4);
+		result |= LCD_ReadPins();
+	#else
+		result = LCD_ReadPins();
+	#endif
+
 	return result;
 }
 
@@ -111,7 +155,9 @@ void LCD_Write(uint8_t data, uint8_t is_command) {
 	LCD_RW_RESET;
 	LCD_SetDataOutputMode();
 
-	LCD_WritePins(data >> 4);
+	#ifndef LCD_8BIT_MODE
+		LCD_WritePins(data >> 4);
+	#endif
 	LCD_WritePins(data);
 
 	while((LCD_CheckBusyFlag() & (1<<7)));
@@ -230,8 +276,8 @@ void LCD_Delay_us(TIM_HandleTypeDef *htim, uint16_t us) {
 
 // Delay in ms
 void LCD_Delay_ms(TIM_HandleTypeDef *htim, uint16_t ms) {
-    htim.Instance->CNT = 0;
-    while (htim.Instance->CNT <= (ms * 1000)) {
+    htim->Instance->CNT = 0;
+    while (htim->Instance->CNT <= (ms * 1000)) {
     }
 }
 
@@ -248,23 +294,28 @@ void LCD_Init(void) {
 	LCD_SetDataOutputMode();
 	HAL_Delay(15);
 
-	// send initialization data in 8-bit mode
-	LCD_SetDataPins(0x03);
+	// send initialization data
+	LCD_WritePins(0x03);
 	LCD_Delay_us(timer, 4100);
 
-	LCD_SetDataPins(0x03);
+	LCD_WritePins(0x03);
 	LCD_Delay_us(timer, 100);
 
-	LCD_SetDataPins(0x03);
+	LCD_WritePins(0x03);
 	LCD_Delay_us(timer, 100);
 
-	// set display into 4-bit mode
-	LCD_SetDataPins(0x02);
-	LCD_Delay_us(timer, 100);
+	// set transfer mode
+	#ifdef LCD_8BIT_MODE
+		LCD_WritePins(0x03);
+		LCD_Delay_us(timer, 100);
+		LCD_Write(LCD_FUNC|LCD_FUNC8BIT|LCD_FUNC2LINE|LCD_FUNC5x7,1);
+	#else 
+		LCD_WritePins(0x02);
+		LCD_Delay_us(timer, 100);
+		LCD_Write(LCD_FUNC|LCD_FUNC4BIT|LCD_FUNC2LINE|LCD_FUNC5x7,1);
+	#endif
 
-	// Set display parameters
-	LCD_Write(LCD_FUNC|LCD_FUNC4BIT|LCD_FUNC2LINE|LCD_FUNC5x7,1);
-	LCD_Write(LCD_ONOFF|LCD_CURSOROFFew,1);
+	LCD_Write(LCD_ONOFF|LCD_CURSOROFF,1);
 	LCD_Write(LCD_ONOFF|LCD_DISPLAYON,1);
 	LCD_Write(LCD_ENTRY|LCD_ENTRYRIGHT,1);
 

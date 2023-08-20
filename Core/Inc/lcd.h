@@ -1,13 +1,22 @@
 #ifndef LCD_H_
 #define LCD_H_
 
+#include <stdint.h>
 
-#define RS_Pin GPIO_PIN_1
-#define RS_GPIO_Port GPIOC
-#define RW_Pin GPIO_PIN_3
-#define RW_GPIO_Port GPIOC
-#define E_Pin GPIO_PIN_0
-#define E_GPIO_Port GPIOC
+
+#define LCD_8BIT_MODE	// Sets data transfer mode, delete/comment this line to change into 4-bit mode.
+
+#ifdef LCD_8BIT_MODE
+#define D0_Pin GPIO_PIN_0
+#define D0_GPIO_Port GPIOB
+#define D1_Pin GPIO_PIN_1
+#define D1_GPIO_Port GPIOB
+#define D2_Pin GPIO_PIN_2
+#define D2_GPIO_Port GPIOB
+#define D3_Pin GPIO_PIN_3
+#define D3_GPIO_Port GPIOB
+#endif
+
 #define D4_Pin GPIO_PIN_4
 #define D4_GPIO_Port GPIOB
 #define D5_Pin GPIO_PIN_5
@@ -17,7 +26,12 @@
 #define D7_Pin GPIO_PIN_7
 #define D7_GPIO_Port GPIOB
 
-
+#define RS_Pin GPIO_PIN_1
+#define RS_GPIO_Port GPIOC
+#define RW_Pin GPIO_PIN_3
+#define RW_GPIO_Port GPIOC
+#define E_Pin GPIO_PIN_0
+#define E_GPIO_Port GPIOC
 
 #define LCD_Y 						2
 #define LCD_X 						16
@@ -50,8 +64,6 @@
 #define LCD_SET_CGRAM				0x40
 #define LCD_SET_DDRAM				0x80
 
-
-
 #define LCD_E_SET 		HAL_GPIO_WritePin(E_GPIO_Port, E_Pin, GPIO_PIN_SET)
 #define LCD_E_RESET 	HAL_GPIO_WritePin(E_GPIO_Port, E_Pin, GPIO_PIN_RESET)
 #define LCD_RS_SET 		HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_SET)
@@ -59,23 +71,21 @@
 #define LCD_RW_SET 		HAL_GPIO_WritePin(RW_GPIO_Port, RW_Pin, GPIO_PIN_SET)
 #define LCD_RW_RESET 	HAL_GPIO_WritePin(RW_GPIO_Port, RW_Pin, GPIO_PIN_RESET)
 
+// Function Prototypes with comments
 
-
-void LCD_Home();
-void LCD_Delay_us(uint16_t us);
-void LCD_Clear(void);
-void LCD_Init(void);
-void LCD_SetLocation(uint8_t x, uint8_t y);
-void LCD_Blink(uint8_t on_off);
-void LCD_Cursor(uint8_t on_off);
-void LCD_CustomChar(uint8_t number, uint8_t *def_char);
-void LCD_Char(char c);
-void LCD_String(char* str);
-void LCD_Int(int value);
-void LCD_Hex(int value, uint8_t upper_case);
-void LCD_Write(uint8_t data,uint8_t is_command);
-uint8_t LCD_CheckBusyFlag();
-uint8_t LCD_Read(void);
-
+void LCD_Home(); // Return the cursor to the home position.
+void LCD_Clear(void); // Clear the LCD display.
+void LCD_Init(void); // Initialize the LCD.
+void LCD_SetLocation(uint8_t x, uint8_t y); // Set the cursor location.
+void LCD_Blink(uint8_t on_off); // Turn blinking of the cursor on/off.
+void LCD_Cursor(uint8_t on_off); // Turn the cursor on/off.
+void LCD_CustomChar(uint8_t number, const uint8_t *def_char); // Define a custom character.
+void LCD_Char(char c); // Display a character on the LCD.
+void LCD_String(char* str); // Display a string on the LCD.
+void LCD_Int(int value); // Display an integer on the LCD.
+void LCD_Hex(int value, uint8_t upper_case); // Display an integer in hexadecimal format.
+void LCD_Write(uint8_t data,uint8_t is_command); // Write data to the LCD.
+uint8_t LCD_CheckBusyFlag(); // Check the LCD's busy flag.
+uint8_t LCD_Read(void); // Read data from the LCD.
 
 #endif /* LCD_H_ */
