@@ -5,9 +5,11 @@
 #include "tim.h"
 
 
+// Display buffer
+char lcdBuffer[LCD_Y][LCD_X];
 
-// timer used to create delay
-TIM_HandleTypeDef *timer = &htim3;
+// Timer used to create delay
+TIM_HandleTypeDef *timer = &htim3;	// Default timer set to TIM3. Replace '&htim3' with your own timer instance if necessary.
 
 
 // Configure data pins based on the provided data byte
@@ -35,7 +37,7 @@ static inline void LCD_WritePins(uint8_t data) {
 
 
 // Read the status of data pins and return the resulting byte
-static inline uint8_t LCD_ReadPins() {
+static inline uint8_t LCD_ReadPins(void) {
     uint8_t result = 0;
     LCD_E_SET;
 
@@ -46,7 +48,7 @@ static inline uint8_t LCD_ReadPins() {
 		GPIO_TypeDef* ports[] = {D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port};
     	uint16_t pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
 	#endif
-    
+
 
     for (int i = 0; i < sizeof(ports) / sizeof(ports[0]); i++) {
         if (HAL_GPIO_ReadPin(ports[i], pins[i]) == GPIO_PIN_SET) {
@@ -60,7 +62,7 @@ static inline uint8_t LCD_ReadPins() {
 
 
 // Set display in input mode
-static void LCD_SetDataInputMode() {
+static void LCD_SetDataInputMode(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.Pin = D4_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -94,7 +96,7 @@ static void LCD_SetDataInputMode() {
 
 
 // Set display in output mode
-static void LCD_SetDataOutputMode() {
+static void LCD_SetDataOutputMode(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.Pin = D4_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -212,13 +214,13 @@ void LCD_CustomChar(uint8_t number, const uint8_t *def_char) {
 
 
 // Set cursor to home position
-void LCD_Home() {
+void LCD_Home(void) {
 	LCD_Write(LCD_CLR|LCD_HOME,1);
 }
 
 
 // Read BF value
-uint8_t LCD_CheckBusyFlag() {
+uint8_t LCD_CheckBusyFlag(void) {
 	LCD_RS_RESET;
 	return LCD_Read();
 }
@@ -238,7 +240,7 @@ void LCD_Blink(uint8_t on_off) {
 	if(on_off == 0)
 		LCD_Write(LCD_ONOFF|LCD_DISPLAYON,1);
 	else
-		LCD_Write(LCD_ONOFF|LCD_DISPLAYON|LCD_CURSORON|LCD_BLINKON,1);
+		LCD_Write(LCD_ONOFF|LCD_DISPLAYON|LCD_CURSOROFF|LCD_BLINKON,1);
 }
 
 
@@ -253,16 +255,55 @@ void LCD_SetLocation(uint8_t x, uint8_t y) {
 }
 
 
+// Set buffer
+void LCD_InitBuffer(void) {
+    for (int line = 0; line < LCD_Y; line++) {
+        for (int position = 0; position < LCD_X; position++) {
+            lcdBuffer[line][position] = ' ';
+        }
+    }
+}
+
+
+// Update text inside buffer
+void LCD_UpdateBuffer(uint8_t line, uint8_t position, char* str) {
+    uint8_t i = 0;
+    while (str[i] != '\0' && (position + i) < LCD_X) {
+        lcdBuffer[line][position + i] = str[i];
+        i++;
+    }
+}
+
+// Send bufffer to LCD
+void LCD_FlushBuffer(void) {
+    for (uint8_t line = 0; line < LCD_Y; line++) {
+        for (uint8_t position = 0; position < LCD_X; position++) {
+            LCD_SetLocation(position, line);
+            LCD_Char(lcdBuffer[line][position]);
+        }
+    }
+}
+
+
 // Clear LCD display
 void LCD_Clear(void) {
 	LCD_Write(LCD_CLR,1);
 }
 
 
-//	Print data on selected line
-void LCD_Println(char* str, uint8_t line) {
+//	Clean display and print data
+void LCD_Print(char* str, uint8_t line) {
 	LCD_Clear();
 	LCD_SetLocation(0,line);
+	LCD_UpdateBuffer(line, 0, str);
+	LCD_String(str);
+}
+
+
+//	Print without cleaning the display
+void LCD_Add(char* str, uint8_t line) {
+	LCD_SetLocation(0,line);
+	LCD_UpdateBuffer(line, 0, str);
 	LCD_String(str);
 }
 
@@ -301,15 +342,12 @@ void LCD_Init(void) {
 	LCD_WritePins(0x03);
 	LCD_Delay_us(timer, 100);
 
-	LCD_WritePins(0x03);
-	LCD_Delay_us(timer, 100);
-
 	// set transfer mode
 	#ifdef LCD_8BIT_MODE
 		LCD_WritePins(0x03);
 		LCD_Delay_us(timer, 100);
 		LCD_Write(LCD_FUNC|LCD_FUNC8BIT|LCD_FUNC2LINE|LCD_FUNC5x7,1);
-	#else 
+	#else
 		LCD_WritePins(0x02);
 		LCD_Delay_us(timer, 100);
 		LCD_Write(LCD_FUNC|LCD_FUNC4BIT|LCD_FUNC2LINE|LCD_FUNC5x7,1);

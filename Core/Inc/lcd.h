@@ -13,8 +13,8 @@
 #define D1_GPIO_Port GPIOB
 #define D2_Pin GPIO_PIN_2
 #define D2_GPIO_Port GPIOB
-#define D3_Pin GPIO_PIN_3
-#define D3_GPIO_Port GPIOB
+#define D3_Pin GPIO_PIN_10
+#define D3_GPIO_Port GPIOA
 #endif
 
 #define D4_Pin GPIO_PIN_4
@@ -28,9 +28,9 @@
 
 #define RS_Pin GPIO_PIN_1
 #define RS_GPIO_Port GPIOC
-#define RW_Pin GPIO_PIN_3
+#define RW_Pin GPIO_PIN_2
 #define RW_GPIO_Port GPIOC
-#define E_Pin GPIO_PIN_0
+#define E_Pin GPIO_PIN_3
 #define E_GPIO_Port GPIOC
 
 #define LCD_Y 						2
@@ -73,7 +73,7 @@
 
 // Function Prototypes with comments
 
-void LCD_Home(); // Return the cursor to the home position.
+void LCD_Home(void); // Return the cursor to the home position.
 void LCD_Clear(void); // Clear the LCD display.
 void LCD_Init(void); // Initialize the LCD.
 void LCD_SetLocation(uint8_t x, uint8_t y); // Set the cursor location.
@@ -85,7 +85,12 @@ void LCD_String(char* str); // Display a string on the LCD.
 void LCD_Int(int value); // Display an integer on the LCD.
 void LCD_Hex(int value, uint8_t upper_case); // Display an integer in hexadecimal format.
 void LCD_Write(uint8_t data,uint8_t is_command); // Write data to the LCD.
-uint8_t LCD_CheckBusyFlag(); // Check the LCD's busy flag.
+void LCD_InitBuffer(void);	// Set empty lines into buffer.
+void LCD_UpdateBuffer(uint8_t line, uint8_t position, char* str); // Write string into buffer.
+void LCD_FlushBuffer(void);	// Send buffer to display.
+void LCD_Print(char* str, uint8_t line); //Write new string on cleared display.
+void LCD_Add(char* str, uint8_t line); // Print without clearing the display.
+uint8_t LCD_CheckBusyFlag(void); // Check the LCD's busy flag.
 uint8_t LCD_Read(void); // Read data from the LCD.
 
 #endif /* LCD_H_ */
